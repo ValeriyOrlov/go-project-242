@@ -16,7 +16,7 @@ func GetSize(path string) string {
 	switch mode := fi.Mode(); {
 	case mode.IsRegular():
 		size = fi.Size()
-		/*case mode.IsDir():
+	case mode.IsDir():
 		files, err := os.ReadDir(path)
 		if err != nil {
 			log.Fatal(err)
@@ -24,10 +24,14 @@ func GetSize(path string) string {
 
 		for _, file := range files {
 			if !file.IsDir() {
-				fmt.Println(file.Info())
+				filePath := path + "/" + file.Name()
+				fi, err := os.Lstat(filePath)
+				if err != nil {
+					log.Fatal(err)
+				}
+				size += fi.Size()
 			}
 		}
-		*/
 	}
-	return fmt.Sprintf("size: %d b	path: %s", size, path)
+	return fmt.Sprintf("%dB	%s", size, path)
 }
