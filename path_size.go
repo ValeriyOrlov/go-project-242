@@ -2,14 +2,16 @@ package code
 
 import (
 	"fmt"
-	"log"
 	"os"
 )
 
-func GetSize(path string) string {
+func GetSize(path string) (string, error) {
+	if len(path) == 0 {
+		return "The path to the file or directory has not been entered. Run the program with the -h flag to read the help.", nil
+	}
 	fi, err := os.Lstat(path)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Sprintf("Error: %s", err), err
 	}
 
 	var size int64
@@ -19,7 +21,7 @@ func GetSize(path string) string {
 	case mode.IsDir():
 		files, err := os.ReadDir(path)
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Sprintf("Error: %s", err), err
 		}
 
 		for _, file := range files {
@@ -27,11 +29,11 @@ func GetSize(path string) string {
 				filePath := path + "/" + file.Name()
 				fi, err := os.Lstat(filePath)
 				if err != nil {
-					log.Fatal(err)
+					return fmt.Sprintf("Error: %s", err), err
 				}
 				size += fi.Size()
 			}
 		}
 	}
-	return fmt.Sprintf("%dB	%s", size, path)
+	return fmt.Sprintf("%dB	%s", size, path), err
 }
