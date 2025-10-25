@@ -37,3 +37,39 @@ func GetSize(path string) (int64, error) {
 	}
 	return bytes, err
 }
+
+func FormatSize(bytes int64, flag string) string {
+	if flag == "human" {
+		return humanReadableSize(bytes)
+	}
+
+	return fmt.Sprintf("%dB", bytes)
+}
+
+func humanReadableSize(bytes int64) string {
+	const (
+		KB = 1024
+		MB = KB * 1024
+		GB = MB * 1024
+		TB = GB * 1024
+		PB = TB * 1024
+		EB = PB * 1024
+	)
+
+	switch {
+	case bytes >= EB:
+		return fmt.Sprintf("%.1fEB", float64(bytes)/float64(EB))
+	case bytes >= PB:
+		return fmt.Sprintf("%.1fPB", float64(bytes)/float64(PB))
+	case bytes >= TB:
+		return fmt.Sprintf("%.1fTB", float64(bytes)/float64(TB))
+	case bytes >= GB:
+		return fmt.Sprintf("%.1fGB", float64(bytes)/float64(GB))
+	case bytes >= MB:
+		return fmt.Sprintf("%.1fMB", float64(bytes)/float64(MB))
+	case bytes >= KB:
+		return fmt.Sprintf("%.1fKB", float64(bytes)/float64(KB))
+	default:
+		return fmt.Sprintf("%dB", bytes)
+	}
+}
