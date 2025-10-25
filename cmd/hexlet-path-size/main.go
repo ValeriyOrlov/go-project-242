@@ -16,8 +16,9 @@ func main() {
 		Usage: "print size of a file or directory;",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
-				Name:  "human",
-				Usage: "human-readable sizes (auto-select unit)",
+				Name:    "human",
+				Aliases: []string{"H"},
+				Usage:   "human-readable sizes (auto-select unit)",
 			},
 		},
 
