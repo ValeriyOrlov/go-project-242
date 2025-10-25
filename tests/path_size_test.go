@@ -7,30 +7,30 @@ import (
 
 func TestGetPathSize_File(t *testing.T) {
 	path := "../testdata/fixtures/main.go"
-	want := "1436B	../testdata/fixtures/main.go"
-	msg, err := code.GetSize(path)
+	want := int64(1436)
+	bytes, err := code.GetSize(path)
 
-	if want != msg || err != nil {
-		t.Errorf("unexpected result: got %s, want %s", msg, want)
+	if want != bytes || err != nil {
+		t.Errorf("unexpected result: got %d, want %d", bytes, want)
 	}
 }
 
 func TestGetPathSize_Dir(t *testing.T) {
 	path := "../testdata/fixtures"
-	want := "1471B	../testdata/fixtures"
-	msg, err := code.GetSize(path)
+	want := int64(1471)
+	bytes, err := code.GetSize(path)
 
-	if want != msg || err != nil {
-		t.Errorf("unexpected result: got %s, want %s", msg, want)
+	if want != bytes || err != nil {
+		t.Errorf("unexpected result: got %d, want %d", bytes, want)
 	}
 }
 
 func TestGetPathSize_EmptyPath(t *testing.T) {
 	path := ""
-	want := "The path to the file or directory has not been entered. Run the program with the -h flag to read the help."
-	msg, err := code.GetSize(path)
+	want := "the path to the file or directory has not been entered"
+	_, err := code.GetSize(path)
 
-	if want != msg || err != nil {
-		t.Errorf("unexpected result: got %s, want %s", msg, want)
+	if err.Error() != want && err != nil {
+		t.Errorf("unexpected result: got %s, want %s", err, want)
 	}
 }
