@@ -5,23 +5,23 @@ import (
 	"os"
 )
 
-func GetSize(path string) (string, error) {
+func GetSize(path string) (int64, error) {
 	if len(path) == 0 {
-		return "The path to the file or directory has not been entered. Run the program with the -h flag to read the help.", nil
+		return 0, fmt.Errorf("the path to the file or directory has not been entered")
 	}
 	fi, err := os.Lstat(path)
 	if err != nil {
-		return fmt.Sprintf("Error: %s", err), err
+		return 0, fmt.Errorf("error: %s", err)
 	}
 
-	var size int64
+	var bytes int64
 	switch mode := fi.Mode(); {
 	case mode.IsRegular():
-		size = fi.Size()
+		bytes = fi.Size()
 	case mode.IsDir():
 		files, err := os.ReadDir(path)
 		if err != nil {
-			return fmt.Sprintf("Error: %s", err), err
+			return 0, fmt.Errorf("error: %s", err)
 		}
 
 		for _, file := range files {
@@ -29,11 +29,11 @@ func GetSize(path string) (string, error) {
 				filePath := path + "/" + file.Name()
 				fi, err := os.Lstat(filePath)
 				if err != nil {
-					return fmt.Sprintf("Error: %s", err), err
+					return 0, fmt.Errorf("error: %s", err)
 				}
-				size += fi.Size()
+				bytes += fi.Size()
 			}
 		}
 	}
-	return fmt.Sprintf("%dB	%s", size, path), err
+	return bytes, err
 }
