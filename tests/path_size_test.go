@@ -34,3 +34,27 @@ func TestGetPathSize_EmptyPath(t *testing.T) {
 		t.Errorf("unexpected result: got %s, want %s", err, want)
 	}
 }
+
+func TestFormatSize_HumanFormat(t *testing.T) {
+	testBytes := 123
+	testOneKbBytes := 1024
+	testOneEbBytes := 1152921504606846976
+	wantBytes := "123B"
+	resBytes := code.FormatSize(int64(testBytes), "")
+	wantOneKb := "1.0KB"
+	resOneKb := code.FormatSize(int64(testOneKbBytes), "human")
+	wantOneEb := "1.0EB"
+	resOneEb := code.FormatSize(int64(testOneEbBytes), "human")
+
+	if resBytes != wantBytes {
+		t.Errorf("unexpected result: got %s, want %s", resBytes, wantBytes)
+	}
+
+	if resOneKb != wantOneKb {
+		t.Errorf("unexpected result: got %s, want %s", resOneKb, wantOneKb)
+	}
+
+	if resOneEb != wantOneEb {
+		t.Errorf("unexpected result: got %s, want %s", resOneEb, wantOneEb)
+	}
+}
