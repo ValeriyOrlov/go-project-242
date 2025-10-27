@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 )
 
-func GetDirSize(files []os.DirEntry, path string, flags []string) (int64, error) {
+func GetDirSize(files []os.DirEntry, path string, recursive, human, all bool) (int64, error) {
 	var bytes int64
 	for _, file := range files {
 		if !file.IsDir() {
@@ -17,18 +16,18 @@ func GetDirSize(files []os.DirEntry, path string, flags []string) (int64, error)
 			if err != nil {
 				return 0, fmt.Errorf("error from getDirSize 18: %s", err)
 			}
-			fileSize, err := GetFileSize(fi, flags)
+			fileSize, err := GetFileSize(fi, all)
 			if err != nil {
 				return 0, fmt.Errorf("error getDirSize 22: %s", err)
 			}
 			bytes += fileSize
-		} else if file.IsDir() && slices.Contains(flags, "recursive") {
+		} else if file.IsDir() && recursive {
 			fp := filepath.Join(path, file.Name())
 			files, err := os.ReadDir(fp)
 			if err != nil {
 				return 0, fmt.Errorf("error from getDirSize 30: %s", err)
 			}
-			dirSize, err := GetDirSize(files, fp, flags)
+			dirSize, err := GetDirSize(files, fp, recursive, human, all)
 			if err != nil {
 				return 0, fmt.Errorf("error from getDirSize 36: %s", err)
 			}
@@ -38,15 +37,15 @@ func GetDirSize(files []os.DirEntry, path string, flags []string) (int64, error)
 	return bytes, nil
 }
 
-func GetFileSize(fi os.FileInfo, flags []string) (int64, error) {
-	if strings.HasPrefix(fi.Name(), ".") && !slices.Contains(flags, "all") {
+func GetFileSize(fi os.FileInfo, all bool) (int64, error) {
+	if strings.HasPrefix(fi.Name(), ".") && !all {
 		return 0, nil
 	} else {
 		return fi.Size(), nil
 	}
 }
 
-func GetPathSize(path string, flags []string) (int64, error) {
+func GetPathSize(path string, recursive, human, all bool) (int64, error) {
 	if len(path) == 0 {
 		return 0, fmt.Errorf("the path to the file or directory has not been entered")
 	}
@@ -57,7 +56,7 @@ func GetPathSize(path string, flags []string) (int64, error) {
 	var bytes int64
 	switch mode := fi.Mode(); {
 	case mode.IsRegular():
-		fileSize, err := GetFileSize(fi, flags)
+		fileSize, err := GetFileSize(fi, all)
 		if err != nil {
 			return 0, fmt.Errorf("error from getSize 66: %s", err)
 		}
@@ -67,7 +66,7 @@ func GetPathSize(path string, flags []string) (int64, error) {
 		if err != nil {
 			return 0, fmt.Errorf("error from getSize 72: %s", err)
 		}
-		dirSize, err := GetDirSize(files, path, flags)
+		dirSize, err := GetDirSize(files, path, recursive, human, all)
 		if err != nil {
 			return 0, fmt.Errorf("error from getSize 76: %s", err)
 		}
@@ -76,8 +75,8 @@ func GetPathSize(path string, flags []string) (int64, error) {
 	return bytes, err
 }
 
-func FormatSize(bytes int64, flags []string) string {
-	if slices.Contains(flags, "human") {
+func FormatSize(bytes int64, human bool) string {
+	if human {
 		return humanReadableSize(bytes)
 	}
 
