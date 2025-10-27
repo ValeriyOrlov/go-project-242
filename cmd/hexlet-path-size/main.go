@@ -33,13 +33,12 @@ func main() {
 			bytes, err := code.GetSize(path, flags)
 
 			if len(cmd.LocalFlagNames()) > 0 {
-				flagName := cmd.LocalFlagNames()[0]
 				if err != nil {
 					return err
 				}
-				fmt.Println(code.FormatSize(bytes, flagName))
+				fmt.Println(code.FormatSize(bytes, flags))
 			} else {
-				fmt.Println(code.FormatSize(bytes, ""))
+				fmt.Println(code.FormatSize(bytes, []string{}))
 			}
 			return nil
 		},

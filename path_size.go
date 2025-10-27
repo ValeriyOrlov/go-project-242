@@ -8,7 +8,6 @@ import (
 )
 
 func GetSize(path string, flags []string) (int64, error) {
-	fmt.Println(flags)
 	if len(path) == 0 {
 		return 0, fmt.Errorf("the path to the file or directory has not been entered")
 	}
@@ -48,8 +47,8 @@ func GetSize(path string, flags []string) (int64, error) {
 	return bytes, err
 }
 
-func FormatSize(bytes int64, flag string) string {
-	if flag == "human" {
+func FormatSize(bytes int64, flags []string) string {
+	if slices.Contains(flags, "human") {
 		return humanReadableSize(bytes)
 	}
 
