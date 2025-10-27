@@ -3,9 +3,48 @@ package code
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 )
+
+func GetDirSize(files []os.DirEntry, path string, flags []string) (int64, error) {
+	var bytes int64
+	for _, file := range files {
+		if !file.IsDir() {
+			fp := filepath.Join(path, file.Name())
+			fi, err := os.Lstat(fp)
+			if err != nil {
+				return 0, fmt.Errorf("error from getDirSize 18: %s", err)
+			}
+			fileSize, err := GetFileSize(fi, flags)
+			if err != nil {
+				return 0, fmt.Errorf("error getDirSize 22: %s", err)
+			}
+			bytes += fileSize
+		} else if file.IsDir() && slices.Contains(flags, "recursive") {
+			fp := filepath.Join(path, file.Name())
+			files, err := os.ReadDir(fp)
+			if err != nil {
+				return 0, fmt.Errorf("error from getDirSize 30: %s", err)
+			}
+			dirSize, err := GetDirSize(files, fp, flags)
+			if err != nil {
+				return 0, fmt.Errorf("error from getDirSize 36: %s", err)
+			}
+			bytes += dirSize
+		}
+	}
+	return bytes, nil
+}
+
+func GetFileSize(fi os.FileInfo, flags []string) (int64, error) {
+	if strings.HasPrefix(fi.Name(), ".") && !slices.Contains(flags, "all") {
+		return 0, nil
+	} else {
+		return fi.Size(), nil
+	}
+}
 
 func GetSize(path string, flags []string) (int64, error) {
 	if len(path) == 0 {
@@ -13,36 +52,26 @@ func GetSize(path string, flags []string) (int64, error) {
 	}
 	fi, err := os.Lstat(path)
 	if err != nil {
-		return 0, fmt.Errorf("error: %s", err)
+		return 0, fmt.Errorf("error from getSize 59: %s", err)
 	}
 	var bytes int64
 	switch mode := fi.Mode(); {
 	case mode.IsRegular():
-		if strings.HasPrefix(fi.Name(), ".") && !slices.Contains(flags, "all") {
-			bytes += 0
-		} else {
-			bytes = fi.Size()
+		fileSize, err := GetFileSize(fi, flags)
+		if err != nil {
+			return 0, fmt.Errorf("error from getSize 66: %s", err)
 		}
+		bytes += fileSize
 	case mode.IsDir():
 		files, err := os.ReadDir(path)
 		if err != nil {
-			return 0, fmt.Errorf("error: %s", err)
+			return 0, fmt.Errorf("error from getSize 72: %s", err)
 		}
-
-		for _, file := range files {
-			if !file.IsDir() {
-				filePath := path + "/" + file.Name()
-				fi, err := os.Lstat(filePath)
-				if err != nil {
-					return 0, fmt.Errorf("error: %s", err)
-				}
-				if strings.HasPrefix(file.Name(), ".") && !slices.Contains(flags, "all") {
-					bytes += 0
-				} else {
-					bytes += fi.Size()
-				}
-			}
+		dirSize, err := GetDirSize(files, path, flags)
+		if err != nil {
+			return 0, fmt.Errorf("error from getSize 76: %s", err)
 		}
+		bytes += dirSize
 	}
 	return bytes, err
 }
