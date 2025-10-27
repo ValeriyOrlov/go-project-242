@@ -3,9 +3,12 @@ package code
 import (
 	"fmt"
 	"os"
+	"slices"
+	"strings"
 )
 
-func GetSize(path string) (int64, error) {
+func GetSize(path string, flags []string) (int64, error) {
+	fmt.Println(flags)
 	if len(path) == 0 {
 		return 0, fmt.Errorf("the path to the file or directory has not been entered")
 	}
@@ -13,11 +16,14 @@ func GetSize(path string) (int64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("error: %s", err)
 	}
-
 	var bytes int64
 	switch mode := fi.Mode(); {
 	case mode.IsRegular():
-		bytes = fi.Size()
+		if strings.HasPrefix(fi.Name(), ".") && !slices.Contains(flags, "all") {
+			bytes += 0
+		} else {
+			bytes = fi.Size()
+		}
 	case mode.IsDir():
 		files, err := os.ReadDir(path)
 		if err != nil {
@@ -31,7 +37,11 @@ func GetSize(path string) (int64, error) {
 				if err != nil {
 					return 0, fmt.Errorf("error: %s", err)
 				}
-				bytes += fi.Size()
+				if strings.HasPrefix(file.Name(), ".") && !slices.Contains(flags, "all") {
+					bytes += 0
+				} else {
+					bytes += fi.Size()
+				}
 			}
 		}
 	}
