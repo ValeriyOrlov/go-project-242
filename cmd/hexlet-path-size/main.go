@@ -35,7 +35,7 @@ func main() {
 		Action: func(ctx context.Context, cmd *cli.Command) error {
 			path := cmd.Args().Get(0)
 			flags := cmd.LocalFlagNames()
-			bytes, err := code.GetSize(path, flags)
+			bytes, err := code.GetPathSize(path, flags)
 			if err != nil {
 				return err
 			}

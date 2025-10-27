@@ -46,7 +46,7 @@ func GetFileSize(fi os.FileInfo, flags []string) (int64, error) {
 	}
 }
 
-func GetSize(path string, flags []string) (int64, error) {
+func GetPathSize(path string, flags []string) (int64, error) {
 	if len(path) == 0 {
 		return 0, fmt.Errorf("the path to the file or directory has not been entered")
 	}
