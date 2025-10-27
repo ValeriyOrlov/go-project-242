@@ -34,12 +34,12 @@ func main() {
 
 		Action: func(ctx context.Context, cmd *cli.Command) error {
 			path := cmd.Args().Get(0)
-			flags := cmd.LocalFlagNames()
-			bytes, err := code.GetPathSize(path, flags)
+			bytes, err := code.GetPathSize(path, cmd.Bool("recursive"), cmd.Bool("human"), cmd.Bool("all"))
+
 			if err != nil {
 				return err
 			}
-			result := fmt.Sprintf("%s	%s", code.FormatSize(bytes, flags), path)
+			result := fmt.Sprintf("%s	%s", code.FormatSize(bytes, cmd.Bool("human")), path)
 			fmt.Println(result)
 			return nil
 		},
