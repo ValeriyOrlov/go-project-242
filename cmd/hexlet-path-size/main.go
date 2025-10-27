@@ -20,11 +20,17 @@ func main() {
 				Aliases: []string{"H"},
 				Usage:   "human-readable sizes (auto-select unit)",
 			},
+			&cli.BoolFlag{
+				Name:    "all",
+				Aliases: []string{"a"},
+				Usage:   "include hidden files and directories",
+			},
 		},
 
 		Action: func(ctx context.Context, cmd *cli.Command) error {
 			path := cmd.Args().Get(0)
-			bytes, err := code.GetSize(path)
+			flags := cmd.LocalFlagNames()
+			bytes, err := code.GetSize(path, flags)
 
 			if len(cmd.LocalFlagNames()) > 0 {
 				flagName := cmd.LocalFlagNames()[0]
