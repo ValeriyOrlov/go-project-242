@@ -59,7 +59,7 @@ func TestFormatSize_HumanFormat(t *testing.T) {
 	}
 }
 
-func TestFormatSize_AllFormat(t *testing.T) {
+func TestGetSize_AllFormat(t *testing.T) {
 	path := "../testdata/fixtures/.hiddenfiletwo"
 	want := int64(2508)
 	hiddenFileSize, err := code.GetSize(path, []string{"all"})
@@ -73,5 +73,19 @@ func TestFormatSize_AllFormat(t *testing.T) {
 
 	if want != hiddenFileSizeWithoutFlag || err != nil {
 		t.Errorf("unexpected result: got %d, want %d.", hiddenFileSizeWithoutFlag, want)
+	}
+}
+
+func TestGetSize_RecursiveMode(t *testing.T) {
+	path := "../testdata/fixtures/"
+	want := int64(1471)
+	withoutRecursiveModeSize, err := code.GetSize(path, []string{})
+	if want != withoutRecursiveModeSize || err != nil {
+		t.Errorf("unexpected result: got %d, want %d.", withoutRecursiveModeSize, want)
+	}
+	want = int64(2080)
+	withRecursiveModeSize, err := code.GetSize(path, []string{"recursive"})
+	if want != withRecursiveModeSize || err != nil {
+		t.Errorf("unexpected result: got %d, want %d.", withRecursiveModeSize, want)
 	}
 }
