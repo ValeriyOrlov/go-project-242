@@ -45,34 +45,34 @@ func GetFileSize(fi os.FileInfo, all bool) (int64, error) {
 	}
 }
 
-func GetPathSize(path string, recursive, human, all bool) (int64, error) {
+func GetPathSize(path string, recursive, human, all bool) (string, error) {
 	if len(path) == 0 {
-		return 0, fmt.Errorf("the path to the file or directory has not been entered")
+		return "", fmt.Errorf("the path to the file or directory has not been entered")
 	}
 	fi, err := os.Lstat(path)
 	if err != nil {
-		return 0, fmt.Errorf("error from getSize 59: %s", err)
+		return "", fmt.Errorf("error from getSize 59: %s", err)
 	}
 	var bytes int64
 	switch mode := fi.Mode(); {
 	case mode.IsRegular():
 		fileSize, err := GetFileSize(fi, all)
 		if err != nil {
-			return 0, fmt.Errorf("error from getSize 66: %s", err)
+			return "", fmt.Errorf("error from getSize 66: %s", err)
 		}
 		bytes += fileSize
 	case mode.IsDir():
 		files, err := os.ReadDir(path)
 		if err != nil {
-			return 0, fmt.Errorf("error from getSize 72: %s", err)
+			return "", fmt.Errorf("error from getSize 72: %s", err)
 		}
 		dirSize, err := GetDirSize(files, path, recursive, human, all)
 		if err != nil {
-			return 0, fmt.Errorf("error from getSize 76: %s", err)
+			return "", fmt.Errorf("error from getSize 76: %s", err)
 		}
 		bytes += dirSize
 	}
-	return bytes, err
+	return FormatSize(bytes, human), err
 }
 
 func FormatSize(bytes int64, human bool) string {
