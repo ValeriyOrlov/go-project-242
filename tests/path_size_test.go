@@ -7,21 +7,21 @@ import (
 
 func TestGetPathSize_File(t *testing.T) {
 	path := "../testdata/fixtures/main.go"
-	want := int64(1436)
+	want := "1436B"
 	bytes, err := code.GetPathSize(path, false, false, false)
 
 	if want != bytes || err != nil {
-		t.Errorf("unexpected result: got %d, want %d", bytes, want)
+		t.Errorf("unexpected result: got %s, want %s", bytes, want)
 	}
 }
 
 func TestGetPathSize_Dir(t *testing.T) {
 	path := "../testdata/fixtures"
-	want := int64(1471)
+	want := "1471B"
 	bytes, err := code.GetPathSize(path, false, false, false)
 
 	if want != bytes || err != nil {
-		t.Errorf("unexpected result: got %d, want %d", bytes, want)
+		t.Errorf("unexpected result: got %s, want %s", bytes, want)
 	}
 }
 
@@ -61,31 +61,31 @@ func TestFormatSize_HumanFormat(t *testing.T) {
 
 func TestGetSize_AllFormat(t *testing.T) {
 	path := "../testdata/fixtures/.hiddenfiletwo"
-	want := int64(2508)
+	want := "2508B"
 	hiddenFileSize, err := code.GetPathSize(path, false, false, true)
 
 	if want != hiddenFileSize || err != nil {
-		t.Errorf("unexpected result: got %d, want %d.", hiddenFileSize, want)
+		t.Errorf("unexpected result: got %s, want %s.", hiddenFileSize, want)
 	}
 
-	want = 0
+	want = "0B"
 	hiddenFileSizeWithoutFlag, err := code.GetPathSize(path, false, false, false)
 
 	if want != hiddenFileSizeWithoutFlag || err != nil {
-		t.Errorf("unexpected result: got %d, want %d.", hiddenFileSizeWithoutFlag, want)
+		t.Errorf("unexpected result: got %s, want %s.", hiddenFileSizeWithoutFlag, want)
 	}
 }
 
 func TestGetSize_RecursiveMode(t *testing.T) {
 	path := "../testdata/fixtures/"
-	want := int64(1471)
+	want := "1471B"
 	withoutRecursiveModeSize, err := code.GetPathSize(path, false, false, false)
 	if want != withoutRecursiveModeSize || err != nil {
-		t.Errorf("unexpected result: got %d, want %d.", withoutRecursiveModeSize, want)
+		t.Errorf("unexpected result: got %s, want %s.", withoutRecursiveModeSize, want)
 	}
-	want = int64(2080)
+	want = "2080B"
 	withRecursiveModeSize, err := code.GetPathSize(path, true, false, false)
 	if want != withRecursiveModeSize || err != nil {
-		t.Errorf("unexpected result: got %d, want %d.", withRecursiveModeSize, want)
+		t.Errorf("unexpected result: got %s, want %s.", withRecursiveModeSize, want)
 	}
 }
