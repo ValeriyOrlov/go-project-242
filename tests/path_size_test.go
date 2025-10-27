@@ -58,3 +58,20 @@ func TestFormatSize_HumanFormat(t *testing.T) {
 		t.Errorf("unexpected result: got %s, want %s", resOneEb, wantOneEb)
 	}
 }
+
+func TestFormatSize_AllFormat(t *testing.T) {
+	path := "../testdata/fixtures/.hiddenfiletwo"
+	want := int64(2508)
+	hiddenFileSize, err := code.GetSize(path, []string{"all"})
+
+	if want != hiddenFileSize || err != nil {
+		t.Errorf("unexpected result: got %d, want %d.", hiddenFileSize, want)
+	}
+
+	want = 0
+	hiddenFileSizeWithoutFlag, err := code.GetSize(path, []string{})
+
+	if want != hiddenFileSizeWithoutFlag || err != nil {
+		t.Errorf("unexpected result: got %d, want %d.", hiddenFileSizeWithoutFlag, want)
+	}
+}
