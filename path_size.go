@@ -2,6 +2,7 @@ package code
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -49,12 +50,46 @@ func GetPathSize(path string, recursive, human, all bool) (string, error) {
 	if len(path) == 0 {
 		return "", fmt.Errorf("the path to the file or directory has not been entered")
 	}
+
+	normalizedPath := func(s, suffix string) string {
+		before, found := strings.CutSuffix(s, suffix)
+		if found {
+			return before
+		} else {
+			return s
+		}
+	}
+
+	path = normalizedPath(path, "/")
 	fi, err := os.Lstat(path)
 	if err != nil {
 		return "", fmt.Errorf("error from getSize 59: %s", err)
 	}
 	var bytes int64
 	switch mode := fi.Mode(); {
+	case mode&fs.ModeSymlink != 0:
+		pathToTarget, err := filepath.EvalSymlinks(path)
+
+		if err != nil {
+			bytes += 0
+			break
+		}
+
+		fi, _ := os.Lstat(pathToTarget)
+		if !fi.IsDir() {
+			fileSize, err := GetFileSize(fi, all)
+			if err != nil {
+				return "", fmt.Errorf("ошибка при вычислении размера файла: %s", err)
+			}
+			bytes += fileSize
+		}
+		if fi.IsDir() && recursive {
+			files, _ := os.ReadDir(path)
+			dirSize, _ := GetDirSize(files, path, recursive, human, all)
+			bytes += dirSize
+		} else {
+			bytes += 0
+		}
 	case mode.IsRegular():
 		fileSize, err := GetFileSize(fi, all)
 		if err != nil {
