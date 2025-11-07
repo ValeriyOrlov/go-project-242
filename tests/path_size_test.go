@@ -15,6 +15,26 @@ func TestGetPathSize_File(t *testing.T) {
 	}
 }
 
+func TestGetSymlinkSize_File(t *testing.T) {
+	path := "../testdata/fixtures/linkToNewFile"
+	want := "769B"
+	bytes, err := code.GetPathSize(path, false, false, false)
+
+	if want != bytes || err != nil {
+		t.Errorf("unexpected result: got %s, want %s", bytes, want)
+	}
+}
+
+func TestGetBrokenSymlinkSize(t *testing.T) {
+	path := "../testdata/fixtures/brokenSymlink"
+	want := "0B"
+	bytes, err := code.GetPathSize(path, false, false, false)
+
+	if want != bytes || err != nil {
+		t.Errorf("unexpected result: got %s, want %s", bytes, want)
+	}
+}
+
 func TestGetPathSize_Dir(t *testing.T) {
 	path := "../testdata/fixtures"
 	want := "2265B"
@@ -22,6 +42,23 @@ func TestGetPathSize_Dir(t *testing.T) {
 
 	if want != bytes || err != nil {
 		t.Errorf("unexpected result: got %s, want %s", bytes, want)
+	}
+}
+
+func TestGetSymlinkPathSize_Dir(t *testing.T) {
+	path := "../testdata/fixtures/linkToEmployees"
+	wantWithoutRecursiveMode := "0B"
+	bytes, err := code.GetPathSize(path, false, false, false)
+
+	if wantWithoutRecursiveMode != bytes || err != nil {
+		t.Errorf("unexpected result: got %s, want %s", bytes, wantWithoutRecursiveMode)
+	}
+
+	wantWithRecursiveMode := "326B"
+	bytes, err = code.GetPathSize(path, true, false, false)
+
+	if wantWithRecursiveMode != bytes || err != nil {
+		t.Errorf("unexpected result: got %s, want %s", bytes, wantWithRecursiveMode)
 	}
 }
 
