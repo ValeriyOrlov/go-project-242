@@ -1,0 +1,3 @@
+The leading l indicates that this file is a symlink, in contrast to - which indicates a regular file, d which indicates a directory, and other less common prefixes.
+A symlink is type of file which only contains a link to another file. Reading a symlink reads the real file. Writing to a symlink writes to the real file. cding to a symlink that is to a directory results in behaviour almost identical to what would happen if you had cd'd into the real directory.
+The permission bits are displayed as rwxrwxrwx. All symlinks show these bits, but they are "dummy permissions". The actual (or effective) permissions of a symlink are the permissions of the real file it links to. You can get the real permissions (and file type) by running stat on the symlink, for example:
