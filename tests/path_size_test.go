@@ -17,7 +17,7 @@ func TestGetPathSize_File(t *testing.T) {
 
 func TestGetPathSize_Dir(t *testing.T) {
 	path := "../testdata/fixtures"
-	want := "1471B"
+	want := "2265B"
 	bytes, err := code.GetPathSize(path, false, false, false)
 
 	if want != bytes || err != nil {
@@ -78,12 +78,12 @@ func TestGetSize_AllFormat(t *testing.T) {
 
 func TestGetSize_RecursiveMode(t *testing.T) {
 	path := "../testdata/fixtures/"
-	want := "1471B"
+	want := "2265B"
 	withoutRecursiveModeSize, err := code.GetPathSize(path, false, false, false)
 	if want != withoutRecursiveModeSize || err != nil {
 		t.Errorf("unexpected result: got %s, want %s.", withoutRecursiveModeSize, want)
 	}
-	want = "2080B"
+	want = "2874B"
 	withRecursiveModeSize, err := code.GetPathSize(path, true, false, false)
 	if want != withRecursiveModeSize || err != nil {
 		t.Errorf("unexpected result: got %s, want %s.", withRecursiveModeSize, want)
