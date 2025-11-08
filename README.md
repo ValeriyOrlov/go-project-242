@@ -14,7 +14,7 @@
 
 ## Пример установки и использования:
 
-<video src=" https://asciinema.org/a/zkqgEfSVTLiAnlta8O6lz3hAc" autoplay></video>  
+[Демонстрация проекта](https://asciinema.org/a/zkqgEfSVTLiAnlta8O6lz3hAc)
 
 Без флагов выводится размер в байтах директории/файла, до которой/которого указан путь:
 
